@@ -2,7 +2,7 @@ import sys
 
 
 def main():
-    f = open('day1_1_input.txt', 'r')
+    f = open('1a_input', 'r')
     result = 0
     for row in f.readlines():
         result += int(row)
