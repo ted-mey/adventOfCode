@@ -1,26 +1,19 @@
 from collections import Counter
 
+def doIt(rows):
+    rowLen = len(rows[0])-1
+    print("rL", rowLen)
+    for i in range(rowLen):
+        words = []
+        for row in rows:
+            split = list(row)
+            word = ""
+            for j in range(rowLen): 
+                word = word + split[j] if j != i else word
+            if word in words:
+                return word
+            else:
+                words.append(word)
+
 rows = open("2a_input").readlines()
-twos = 0
-threes = 0
-for row in rows:
-    rowRes = Counter(list(row))    
-    twoFound = False
-    threeFound = False
-    for r in rowRes:        
-        if rowRes[r] == 2:
-            if(not twoFound):
-                twos += 1
-                twoFound = True
-        elif rowRes[r] == 3:
-            if(not threeFound):
-                threeFound = True
-                threes += 1
-
-
-print("2: ", twos)
-print("3: ", threes)
-print(twos * threes)
-
-
-####in progress
+print(doIt(rows))
