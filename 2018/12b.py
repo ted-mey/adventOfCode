@@ -2,11 +2,12 @@ import re
 
 
 class LinkedPot:
-    def __init__(self, prev):
+    def __init__(self, prev, index):
         self.prev = prev
         self.hasPlant = False
         self.next = None
         self.startNode = False
+        self.index = index
 
 
 def parseInitialState(input):
@@ -14,13 +15,13 @@ def parseInitialState(input):
     
     input = res.group(0)
     pots = list(input)
-    startNode = LinkedPot(None)
+    startNode = LinkedPot(None, 0)
     startNode.startNode = True
     
     next = startNode
     for pot in pots:
         next.hasPlant = (True if pot == '#' else False)
-        n2 = LinkedPot(next)
+        n2 = LinkedPot(next, next.index+1)
         next.next = n2
         next = n2
     next.prev.next = None
@@ -62,14 +63,14 @@ def buildPotRuleName(pot):
 def step(rules, firstPlant):
     init = firstPlant
     if firstPlant.hasPlant:
-        neg2 = LinkedPot(None)
-        neg1 = LinkedPot(neg2)
+        neg2 = LinkedPot(None, firstPlant.index-2)
+        neg1 = LinkedPot(neg2, firstPlant.index-1)
         neg2.next = neg1
         neg1.next = firstPlant
         firstPlant.prev = neg1
         init = neg2
     elif firstPlant.next.hasPlant:
-        neg1 = LinkedPot(None)
+        neg1 = LinkedPot(None, firstPlant.index-1)
         neg1.next = firstPlant
         firstPlant.prev = neg1
         init = neg1
@@ -83,7 +84,7 @@ def step(rules, firstPlant):
         currentPot.nextGen = res
         
         if currentPot.next == None and (currentPot.hasPlant or currentPot.prev.hasPlant):
-            next = LinkedPot(None)
+            next = LinkedPot(None, currentPot.index+1)
             currentPot.next = next
             next.prev = currentPot        
         currentPot = currentPot.next
@@ -97,47 +98,53 @@ def step(rules, firstPlant):
 
 def calculateScore(firstPot):
     score = 0
-
-    startPot = firstPot
-    while(not startPot.startNode):
-        startPot = startPot.next
-
-    index = 0
-    currentPot = startPot
-    while currentPot.prev != None:
-        currentPot = currentPot.prev
-        index -= 1
-        if(currentPot.hasPlant):
-            score += index
-    
-    index = 0
-    currentPot = startPot
-    while currentPot.next != None:
-        index += 1
-        currentPot = currentPot.next
-        if(currentPot.hasPlant):
-            score += index
+    while firstPot.next != None:
+        if(firstPot.hasPlant):
+            score += firstPot.index
+        firstPot = firstPot.next
     return score
 
 def pTree(start):
     n = start
     res = ""
+    index = ""
     while(n != None):
+        index += str(n.index)
+        if n.startNode:
+            res += "0"
+            n = n.next
+            continue
         res += "#" if n.hasPlant else "."
         n = n.next
     print(res)
+    print(index)
+
+
+def clean(start):
+    res = start
+    reader = start
+    i = 0
+    while(not reader.hasPlant):
+        reader = reader.next
+        if i > 4:
+            res = res.next
+        i += 1
+    return res
+
 
 def main():
     file = open("12_input")
-    numGen = 20
+    numGen = 50000
     firstPlant = parseInitialState(file.readline())
     rules = parseRules(file.readlines())
 
-    for _ in range(numGen):
-        pTree(firstPlant)        
+    for num in range(numGen):
+        #pTree(firstPlant)
         firstPlant = step(rules, firstPlant)
+        if num % 20:
+            firstPlant = clean(firstPlant) 
 
-    pTree(firstPlant)        
+#    pTree(firstPlant)        
     print(calculateScore(firstPlant))
 
 
