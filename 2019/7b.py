@@ -14,7 +14,7 @@ def run_program(program, p_input):
         opcode = dm_op[1]
 
         if opcode == 99:
-            break
+            return None
 
         input1 = int(program[curr + 1])
         if opcode == 3:
@@ -75,18 +75,35 @@ def generate_permutations(num_elem_to_process, a, out):
         generate_permutations(num_elem_to_process-1, a, out)
 
 
+def find(phase_settings, program):
+    amplifiers = {}
+    for phase_setting in phase_settings:
+        amplifiers[phase_setting] = program.copy()
+    output = 0
+    for _ in range(10):
+        for phase_setting in phase_settings:
+            o = run_program(amplifiers[phase_setting], [phase_setting, output])
+            if o is None:
+                return output
+            output = o
+            print('ps', phase_setting)
+            print('o', output)
+    return output
+
 def main():
-    f = open('7_input', 'r')
+    f = open('test', 'r')
     program = f.readline().split(',')
     ps_combinations = []
-    generate_permutations(5, [4, 3, 2, 1, 0], ps_combinations)
-    ps_combinations.append([4, 3, 2, 1, 0])
+    init = [9, 8, 7, 6, 5]
+    generate_permutations(5, init, ps_combinations)
+    ps_combinations.append(init)
+
+    print('go')
+    print('res', find(init, program))
 
     result = 0
     for phase_settings in ps_combinations:
-        output = 0
-        for phase_setting in phase_settings:
-            output = run_program(program.copy(), [phase_setting, output])
+        output = find(phase_settings, program)
         result = result if output <= result else output
     print('Result: ', result)
 main()
