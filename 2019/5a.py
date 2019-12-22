@@ -35,7 +35,7 @@ def run_program(program, p_input):
     print("res:", program[0])
 
 def main():
-    f = open('5a_input', 'r')
+    f = open('5_input', 'r')
     program = f.readline().split(',')
     run_program(program, [1])
 
