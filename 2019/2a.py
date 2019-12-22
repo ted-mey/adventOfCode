@@ -26,11 +26,7 @@ def main():
             raise Exception("Unknown program code %s" % program[curr])
         pos = int(program[curr+3])
         program[pos] = res
-        print('pos',pos)
-        print('res',res)
-        print(program)
         curr += 4
-    print(program)
     print('Result on index 0: %s' % program[0])
 
 main()
